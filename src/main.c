@@ -6,7 +6,7 @@
 /*   By: tclaereb <tclaereb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:39:04 by tclaereb          #+#    #+#             */
-/*   Updated: 2024/03/25 16:58:03 by tclaereb         ###   ########.fr       */
+/*   Updated: 2024/03/27 05:26:17 by tclaereb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,83 +18,59 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "../includes/fdf.h"
 #include "../MLX42/include/MLX42/MLX42.h"
 
-#define WIDTH 512
-#define HEIGHT 512
+/*
+*	Define ft_error for when something wrong happen
+*	Argc == 2 only
+*	Check if fd is valid
+*	Check if map is valid:
+*	- Same number of column for each row
+*	- All column are valid (integer value)
+*	- No unknow characters (number and one sep char only)
+*/
 
-static mlx_image_t* image;
-
-// -----------------------------------------------------------------------------
-
-int32_t ft_pixel(int32_t r, int32_t g, int32_t b, int32_t a)
+static void ft_error(void)
 {
-    return (r << 24 | g << 16 | b << 8 | a);
+	ft_printf("%s", mlx_strerror(mlx_errno));
+	exit(EXIT_FAILURE);
 }
 
-void ft_randomize(void* param)
+void	display_map(int **map, int line_len)
 {
-	(void)param;
-	for (uint32_t i = 0; i < image->width; ++i)
+	int	i;
+	int	j;
+
+	i = 0;
+	while (map[i])
 	{
-		for (uint32_t y = 0; y < image->height; ++y)
+		j = 0;
+		while (j < line_len)
 		{
-			uint32_t color = ft_pixel(
-				rand() % 0xFF, // R
-				rand() % 0xFF, // G
-				rand() % 0xFF, // B
-				rand() % 0xFF  // A
-			);
-			mlx_put_pixel(image, i, y, color);
+			ft_printf("%d ", map[i][j]);
+			j++;
 		}
+		ft_printf("\n");
+		i++;
 	}
 }
 
-void ft_hook(void* param)
+int	main(int argc, char **argv)
 {
-	mlx_t* mlx = param;
+	int		**map;
+	char	*path;
+	int		line_len;
 
-	if (mlx_is_key_down(mlx, MLX_KEY_ESCAPE))
-		mlx_close_window(mlx);
-	if (mlx_is_key_down(mlx, MLX_KEY_UP))
-		image->instances[0].y -= 5;
-	if (mlx_is_key_down(mlx, MLX_KEY_DOWN))
-		image->instances[0].y += 5;
-	if (mlx_is_key_down(mlx, MLX_KEY_LEFT))
-		image->instances[0].x -= 5;
-	if (mlx_is_key_down(mlx, MLX_KEY_RIGHT))
-		image->instances[0].x += 5;
-}
-
-// -----------------------------------------------------------------------------
-
-int32_t main(void)
-{
-	mlx_t* mlx;
-
-	// Gotta error check this stuff
-	if (!(mlx = mlx_init(WIDTH, HEIGHT, "MLX42", true)))
-	{
-		puts(mlx_strerror(mlx_errno));
-		return(EXIT_FAILURE);
-	}
-	if (!(image = mlx_new_image(mlx, 128, 128)))
-	{
-		mlx_close_window(mlx);
-		puts(mlx_strerror(mlx_errno));
-		return(EXIT_FAILURE);
-	}
-	if (mlx_image_to_window(mlx, image, 0, 0) == -1)
-	{
-		mlx_close_window(mlx);
-		puts(mlx_strerror(mlx_errno));
-		return(EXIT_FAILURE);
-	}
-
-	mlx_loop_hook(mlx, ft_randomize, mlx);
-	mlx_loop_hook(mlx, ft_hook, mlx);
-
-	mlx_loop(mlx);
-	mlx_terminate(mlx);
-	return (EXIT_SUCCESS);
+	if (argc != 2)
+		ft_error();
+	line_len = 0;
+	map = NULL;
+	path = ft_strjoin("src/maps/", argv[1]);
+	if (!path || !get_map(path, &map, &line_len))
+		return (free_ptrptr((void ***)&map), 0);
+	display_map(map, line_len);
+	free_ptrptr((void ***)&map);
+	free(path);
+	return (0);
 }

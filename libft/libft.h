@@ -6,7 +6,7 @@
 /*   By: tclaereb <tclaereb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 11:41:51 by tclaereb          #+#    #+#             */
-/*   Updated: 2024/03/25 14:43:19 by tclaereb         ###   ########.fr       */
+/*   Updated: 2024/03/27 04:47:12 by tclaereb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,14 +24,6 @@
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 1
 # endif
-
-typedef struct s_list
-{
-	int				content;
-	int				index;
-	struct s_list	*next;
-	struct s_list	*previous;
-}	t_list;
 
 size_t	ft_strlen(const char *str);
 size_t	ft_strlcat(char *dst, const char *src, size_t dst_size);
@@ -70,16 +62,6 @@ void	*ft_memmove(void *dest, const void *src, size_t n);
 void	*ft_memset(void *ptr, int value, size_t size);
 void	*ft_memcpy(void *dest, const void *src, size_t size);
 void	ft_striteri(char *s, void (*f)(unsigned int, char*));
-
-void	ft_lstadd_back(t_list **lst, t_list *new);
-void	ft_lstadd_front(t_list **lst, t_list *new);
-void	ft_lstdelone(t_list *lst);
-void	ft_lstclear(t_list **lst);
-void	ft_lstiter(t_list *lst, void (*f)(int));
-size_t	ft_lstsize(t_list *lst);
-t_list	*ft_lstnew(int content);
-t_list	*ft_lstlast(t_list *lst);
-t_list	*ft_lstmap(t_list *lst, int (*f)(int));
 
 int		arg_c(va_list args);
 int		arg_s(va_list args);
